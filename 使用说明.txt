@@ -1,0 +1,103 @@
+将test文件夹放入/proto-quic/src/net/tools目录下，之后更改proto-quic/src/net下的BUILD.gn文件
+加入
+
+source_set("simple_client") {
+  sources = [
+    "tools/test/chlo_extractor.cc",
+    "tools/test/chlo_extractor.h",
+    "tools/test/stateless_rejector.cc",
+    "tools/test/stateless_rejector.h",
+    "tools/test/synchronous_host_resolver.cc",
+    "tools/test/synchronous_host_resolver.h",
+	"tools/test/client_base.cc",
+	"tools/test/client_base.h",
+	"tools/test/quic_client_loop.cc",
+	"tools/test/quic_client_loop.h",
+	"tools/test/client_test.cc",
+	"tools/test/client_test.h",
+	"tools/test/client_stream.cc",
+	"tools/test/client_stream.h",
+	"tools/test/client_session.cc",
+	"tools/test/client_session.h",
+	"tools/test/quic_simple_server_packet_writer.cc",
+    "tools/test/quic_simple_server_packet_writer.h",
+  ]
+  deps = [
+    ":net",
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//url",
+  ]
+}
+source_set("simple_server") {
+  sources = [
+    "tools/test/chlo_extractor.cc",
+    "tools/test/chlo_extractor.h",
+    "tools/test/quic_per_connection_packet_writer.cc",
+    "tools/test/quic_per_connection_packet_writer.h",
+    "tools/test/quic_process_packet_interface.h",
+    "tools/test/quic_simple_per_connection_packet_writer.cc",
+    "tools/test/quic_simple_per_connection_packet_writer.h",
+    "tools/test/quic_simple_server_packet_writer.cc",
+    "tools/test/quic_simple_server_packet_writer.h",
+    "tools/test/quic_time_wait_list_manager.cc",
+    "tools/test/quic_time_wait_list_manager.h",
+    "tools/test/stateless_rejector.cc",
+    "tools/test/stateless_rejector.h",
+    "tools/test/synchronous_host_resolver.cc",
+    "tools/test/synchronous_host_resolver.h",
+    "tools/test/server_session_base.cc",
+    "tools/test/server_session_base.h",
+    "tools/test/server_dispatcher_base.cc",
+    "tools/test/server_dispatcher_base.h",
+    "tools/test/server_dispatcher.cc",
+    "tools/test/server_dispatcher.h",
+    "tools/test/server_stream.cc",
+    "tools/test/server_stream.h",
+    "tools/test/server_base.cc",
+    "tools/test/server_base.h",
+    "tools/test/server_session_helper.cc",
+    "tools/test/server_session_helper.h",
+  ]
+  deps = [
+    ":net",
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//url",
+
+  ]
+}
+  executable("quic_simple_server") {
+    sources = [
+      "tools/test/server_bin.cc",
+    ]
+    deps = [
+      ":net",
+      "//base",
+      ":simple_server",
+      "//build/config:exe_and_shlib_deps",
+      "//build/win:default_exe_manifest",
+      "//url",
+    ]
+  }
+  executable("quic_simple_client") {
+    sources = [
+      "tools/test/client_bin.cc",
+    ]
+    deps = [
+      ":net",
+      ":simple_client",
+      "//base",
+      "//build/config:exe_and_shlib_deps",
+      "//build/win:default_exe_manifest",
+      "//url",
+    ]
+  }
+
+在/proto-quic/src下更改BUILD.gn文件，加入
+
+"//net:quic_simple_client",
+"//net:quic_simple_server",
+
+
+之后输入ninja -C out/Default/ quic_simple_server便可得到编译好的运行文件。具体运行可看client_bin.cc和server_bin.cc
